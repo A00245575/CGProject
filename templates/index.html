@@ -1,0 +1,381 @@
+<html>
+    <head>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <style>
+
+            body {
+                background-color: #515151;
+            }
+
+            .bg-darker {
+                background-color: #2a2a2b;
+            }
+
+        </style>
+    </head>
+    <body>
+<div class="container-fluid pl-5 pr-5">
+    <div class="jumbotron text-light bg-darker">
+        <h1>Twitter Sentiment Analysis</h1>
+        <p>Created by James Kidd & Declan Hills</p>
+    </div>
+    <h4 class="text-center text-light">Select Topics</h4>
+    <div class="row">
+        <div class="col-xl-4 offset-1 mb-3">
+            <label for="topic1">Topic 1:</label>
+            <input type="text" class="form-control" id="topic1" placeholder="Enter topic 1" name="topic1" required>
+        </div>
+        <div class="col-xl-4 offset-2 mb-3">
+            <label for="topic2">Topic 2:</label>
+            <input type="text" class="form-control" id="topic2" placeholder="Enter topic 2" name="topic2" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 mt-5 mb-5">
+            <div id="container" style="min-width: 310px; height: 400px;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 mt-5 mb-5">
+            <div id="container2" style="min-width: 310px; height: 800px;"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+var defaultData = "https://demo-live-data.highcharts.com/time-data.csv";
+
+function createChart() {
+
+Highcharts.createElement('link', {
+    href: 'https://fonts.googleapis.com/css?family=Unica+One',
+    rel: 'stylesheet',
+    type: 'text/css'
+}, null, document.getElementsByTagName('head')[0]);
+
+Highcharts.theme = {
+    colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066',
+        '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+    chart: {
+        backgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+            stops: [
+                [0, '#2a2a2b'],
+                [1, '#3e3e40']
+            ]
+        },
+        style: {
+            fontFamily: '\'Unica One\', sans-serif'
+        },
+        plotBorderColor: '#606063'
+    },
+    title: {
+        style: {
+            color: '#E0E0E3',
+            textTransform: 'uppercase',
+            fontSize: '20px'
+        }
+    },
+    subtitle: {
+        style: {
+            color: '#E0E0E3',
+            textTransform: 'uppercase'
+        }
+    },
+    xAxis: {
+        gridLineColor: '#707073',
+        labels: {
+            style: {
+                color: '#E0E0E3'
+            }
+        },
+        lineColor: '#707073',
+        minorGridLineColor: '#505053',
+        tickColor: '#707073',
+        title: {
+            style: {
+                color: '#A0A0A3'
+
+            }
+        }
+    },
+    yAxis: {
+        gridLineColor: '#707073',
+        labels: {
+            style: {
+                color: '#E0E0E3'
+            }
+        },
+        lineColor: '#707073',
+        minorGridLineColor: '#505053',
+        tickColor: '#707073',
+        tickWidth: 1,
+        title: {
+            style: {
+                color: '#A0A0A3'
+            }
+        }
+    },
+    tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        style: {
+            color: '#F0F0F0'
+        }
+    },
+    plotOptions: {
+        series: {
+            dataLabels: {
+                color: '#F0F0F3',
+                style: {
+                    fontSize: '13px'
+                }
+            },
+            marker: {
+                lineColor: '#333'
+            }
+        },
+        boxplot: {
+            fillColor: '#505053'
+        },
+        candlestick: {
+            lineColor: 'white'
+        },
+        errorbar: {
+            color: 'white'
+        }
+    },
+    legend: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        itemStyle: {
+            color: '#E0E0E3'
+        },
+        itemHoverStyle: {
+            color: '#FFF'
+        },
+        itemHiddenStyle: {
+            color: '#606063'
+        },
+        title: {
+            style: {
+                color: '#C0C0C0'
+            }
+        }
+    },
+    credits: {
+        style: {
+            color: '#666'
+        }
+    },
+    labels: {
+        style: {
+            color: '#707073'
+        }
+    },
+
+    drilldown: {
+        activeAxisLabelStyle: {
+            color: '#F0F0F3'
+        },
+        activeDataLabelStyle: {
+            color: '#F0F0F3'
+        }
+    },
+
+    navigation: {
+        buttonOptions: {
+            symbolStroke: '#DDDDDD',
+            theme: {
+                fill: '#505053'
+            }
+        }
+    },
+
+    // scroll charts
+    rangeSelector: {
+        buttonTheme: {
+            fill: '#505053',
+            stroke: '#000000',
+            style: {
+                color: '#CCC'
+            },
+            states: {
+                hover: {
+                    fill: '#707073',
+                    stroke: '#000000',
+                    style: {
+                        color: 'white'
+                    }
+                },
+                select: {
+                    fill: '#000003',
+                    stroke: '#000000',
+                    style: {
+                        color: 'white'
+                    }
+                }
+            }
+        },
+        inputBoxBorderColor: '#505053',
+        inputStyle: {
+            backgroundColor: '#333',
+            color: 'silver'
+        },
+        labelStyle: {
+            color: 'silver'
+        }
+    },
+
+    navigator: {
+        handles: {
+            backgroundColor: '#666',
+            borderColor: '#AAA'
+        },
+        outlineColor: '#CCC',
+        maskFill: 'rgba(255,255,255,0.1)',
+        series: {
+            color: '#7798BF',
+            lineColor: '#A6C7ED'
+        },
+        xAxis: {
+            gridLineColor: '#505053'
+        }
+    },
+
+    scrollbar: {
+        barBackgroundColor: '#808083',
+        barBorderColor: '#808083',
+        buttonArrowColor: '#CCC',
+        buttonBackgroundColor: '#606063',
+        buttonBorderColor: '#606063',
+        rifleColor: '#FFF',
+        trackBackgroundColor: '#404043',
+        trackBorderColor: '#404043'
+    }
+};
+Highcharts.setOptions(Highcharts.theme);
+Highcharts.chart('container2', {
+    chart: {
+        type: 'bar',
+        height: 600
+    },
+    title: {
+        text: 'Age Demo'
+    },
+    legend: {
+        enabled: false
+    },
+    subtitle: {
+        text: 'Instance Load'
+    },
+    data: {
+        csvURL: 'https://demo-live-data.highcharts.com/vs-load.csv',
+        enablePolling: true,
+        dataRefreshRate: 1
+    },
+    plotOptions: {
+        bar: {
+            colorByPoint: true
+        },
+        series: {
+            zones: [{
+                color: '#4CAF50',
+                value: 0
+            }, {
+                color: '#8BC34A',
+                value: 10
+            }, {
+                color: '#CDDC39',
+                value: 20
+            }, {
+                color: '#CDDC39',
+                value: 30
+            }, {
+                color: '#FFEB3B',
+                value: 40
+            }, {
+                color: '#FFEB3B',
+                value: 50
+            }, {
+                color: '#FFC107',
+                value: 60
+            }, {
+                color: '#FF9800',
+                value: 70
+            }, {
+                color: '#FF5722',
+                value: 80
+            }, {
+                color: '#F44336',
+                value: 90
+            }, {
+                color: '#F44336',
+                value: Number.MAX_VALUE
+            }],
+            dataLabels: {
+                enabled: true,
+                format: '{point.y:.0f}%'
+            }
+        }
+    },
+    tooltip: {
+        valueDecimals: 1,
+        valueSuffix: '%'
+    },
+    xAxis: {
+        type: 'category',
+        labels: {
+            style: {
+                fontSize: '10px'
+            }
+        }
+    },
+    yAxis: {
+        max: 100,
+        title: false,
+        plotBands: [{
+            from: 0,
+            to: 30,
+            color: '#E8F5E9'
+        }, {
+            from: 30,
+            to: 70,
+            color: '#FFFDE7'
+        }, {
+            from: 70,
+            to: 100,
+            color: "#FFEBEE"
+        }]
+    }
+});
+// Apply the theme
+Highcharts.setOptions(Highcharts.theme);
+    Highcharts.chart('container', {
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            text: 'Live Sentiment Data'
+        },
+        data: {
+            csvURL: defaultData,
+            enablePolling: true,
+            dataRefreshRate: 1
+        }
+    });
+
+    if (pollingInput.value < 1 || !pollingInput.value) {
+        pollingInput.value = 1;
+    }
+}
+
+// Create the chart
+createChart();
+</script>
+</html>
