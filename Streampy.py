@@ -18,7 +18,15 @@ api = tweepy.API(auth)
 def sentiment_scores(sentence):
     sid_obj = SentimentIntensityAnalyzer()
     sentiment_dict = sid_obj.polarity_scores(sentence)
-    return sentiment_dict['compound']
+    # decide sentiment as positive, negative and neutral
+    if sentiment_dict['compound'] >= 0.05:
+        return "Positive"
+
+    elif sentiment_dict['compound'] <= - 0.05:
+        return "Negative"
+
+    else:
+        return "Neutral"
 
 
 class MyStreamListener(tweepy.StreamListener):
