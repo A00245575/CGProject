@@ -14,18 +14,27 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 
+npn_dict = {
+                "Positive":0,
+                "Neutral":0,
+                "Negative":0
+            }
+
 
 def sentiment_scores(sentence):
     sid_obj = SentimentIntensityAnalyzer()
     sentiment_dict = sid_obj.polarity_scores(sentence)
     # decide sentiment as positive, negative and neutral
     if sentiment_dict['compound'] >= 0.05:
+        npn_dict["Positive"] += 1;
         return "Positive"
 
     elif sentiment_dict['compound'] <= - 0.05:
+        npn_dict["Negative"] += 1;
         return "Negative"
 
     else:
+        npn_dict["Neutral"] += 1;
         return "Neutral"
 
 
@@ -49,19 +58,30 @@ class MyStreamListener(tweepy.StreamListener):
             writer.writerow(row)
         csvFile.close()
         time.sleep(1)
+
+
+        print("{}".format("Positive: "), npn_dict["Positive"])
+        print(type(npn_dict["Positive"]))
+
+
         print(f"{tweet.user.name}:{tweet.text}")
 
     def on_error(self, status):
         print("Error detected")
 
 
-# Create API object
-api = tweepy.API(auth, wait_on_rate_limit=True,
-                 wait_on_rate_limit_notify=True)
 
-tweets_listener = MyStreamListener(api)
-stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["Trump"], languages=["en"])
+
+if __name__ == "__main__":
+    # Create API object
+    api = tweepy.API(auth, wait_on_rate_limit=True,
+                     wait_on_rate_limit_notify=True)
+
+    tweets_listener = MyStreamListener(api)
+    stream = tweepy.Stream(api.auth, tweets_listener)
+    stream.filter(track=["Trump"], languages=["en"])
+
+
 
 
 

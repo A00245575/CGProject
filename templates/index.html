@@ -61,8 +61,9 @@
 </div>
 <script type="text/javascript">
     const defaultData = "../static/TestFiles/sentiment.csv";
-        let counter = 0;
-
+        let Pcounter = 0;
+        let Neucounter = 0;
+        let Ncounter = 0;
         {#let v1 = $('container').highcharts();#}
         {#    v1.series[0].data.y = counter++;#}
         {#    v1.redraw();#}
@@ -81,17 +82,17 @@
         chart.series[0].setData([
             {
                 name: "Positive",
-                y: counter++,
+                y: Pcounter++,
                 drilldown: "Positive"
             },
             {
                 name: "Neutral",
-                y: 10.57,
+                y: Neucounter += 2,
                 drilldown: "Neutral"
             },
             {
                 name: "Negative",
-                y: 7.23,
+                y: Ncounter += 3,
                 drilldown: "Negative"
             }]);
         console.log(chart.series[0].getData);
@@ -146,17 +147,17 @@
                         data: [
                             {
                                 name: "Positive",
-                                y: counter,
+                                y: Pcounter,
                                 drilldown: "Positive"
                             },
                             {
                                 name: "Neutral",
-                                y: 10.57,
+                                y: Neucounter,
                                 drilldown: "Neutral"
                             },
                             {
                                 name: "Negative",
-                                y: 7.23,
+                                y: Ncounter,
                                 drilldown: "Negative"
                             }
                         ]
