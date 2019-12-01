@@ -1,7 +1,5 @@
 import tweepy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import csv
-from datetime import datetime
 import time
 
 consumer_key = "DZC5B3agcSsbGbrI9JQ1xhSCr"
@@ -15,10 +13,15 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 npn_dict = {
-                "Positive":0,
-                "Neutral":0,
-                "Negative":0
-            }
+    "Positive": 0,
+    "Neutral": 0,
+    "Negative": 0,
+    "tweets": ''
+}
+
+
+def get_dict():
+    return npn_dict
 
 
 def sentiment_scores(sentence):
@@ -26,16 +29,13 @@ def sentiment_scores(sentence):
     sentiment_dict = sid_obj.polarity_scores(sentence)
     # decide sentiment as positive, negative and neutral
     if sentiment_dict['compound'] >= 0.05:
-        npn_dict["Positive"] += 1;
-        return "Positive"
+        npn_dict["Positive"] += 1
 
     elif sentiment_dict['compound'] <= - 0.05:
-        npn_dict["Negative"] += 1;
-        return "Negative"
+        npn_dict["Negative"] += 1
 
     else:
-        npn_dict["Neutral"] += 1;
-        return "Neutral"
+        npn_dict["Neutral"] += 1
 
 
 class MyStreamListener(tweepy.StreamListener):
@@ -43,45 +43,12 @@ class MyStreamListener(tweepy.StreamListener):
         super().__init__(api)
         self.api = api
         self.me = api.me()
-        row = ["Time", "Sentiment"]
-        with open('twitter.csv', 'a') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow(row)
-        csvFile.close()
 
     def on_status(self, tweet):
-        sentiment = sentiment_scores(tweet.text)
-        now = datetime.now()  # time object
-        row = [now, sentiment]
-        with open('twitter.csv', 'a') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow(row)
-        csvFile.close()
+        sentiment_scores(tweet.text)
         time.sleep(1)
-
-
-        print("{}".format("Positive: "), npn_dict["Positive"])
-        print(type(npn_dict["Positive"]))
-
-
-        print(f"{tweet.user.name}:{tweet.text}")
+        npn_dict['tweets'] = tweet.text
 
     def on_error(self, status):
         print("Error detected")
-
-
-
-
-if __name__ == "__main__":
-    # Create API object
-    api = tweepy.API(auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
-
-    tweets_listener = MyStreamListener(api)
-    stream = tweepy.Stream(api.auth, tweets_listener)
-    stream.filter(track=["Trump"], languages=["en"])
-
-
-
-
 
