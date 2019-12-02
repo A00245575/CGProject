@@ -16,6 +16,10 @@
             background-color: #515151;
         }
 
+        form {
+            display: inline;
+        }
+
         .bg-darker {
             background-color: #2a2a2b;
         }
@@ -30,38 +34,61 @@
 <script src="https://code.highcharts.com/modules/drilldown.js"></script>
 
 <div class="container-fluid pl-5 pr-5">
-    <div class="jumbotron text-light bg-darker">
+    <nav class="navbar navbar-dark bg-dark">
         <img src="./static/images/logo.png" alt="logo">
         <h1 class="float-center">Twitter Sentiment Analysis</h1>
-    </div>
-    <h4 class="text-center text-light">Select Topics</h4>
+    </nav>
     <div class="row">
         <form>
             <label for="topic1">Topic 1:</label>
             <input type="text" class="form-control" id="topic1" placeholder="Enter topic 1" name="topic1" required>
             <label for="topic2">Topic 2:</label>
             <input type="text" class="form-control" id="topic2" placeholder="Enter topic 2" name="topic2">
-            <input type="submit">
+             <button class="btn btn-primary btn-block mt-1" type="button">Register </button>
         </form>
     </div>
     <div class="row">
-        <div class="col-xl-12 mt-5 mb-5">
-            <div id="container" style="min-width: 310px; height: 400px;"></div>
+        <div class="col-xl-6 mt-2 mb-2">
+            <h4 class="text-center">{{ topic1 }}</h4>
+            <div id="myList" style="height: 150px; overflow: auto">
+            </div>
+        </div>
+        <div class="col-xl-6 mt-2 mb-2">
+            <h4 class="text-center">{{ topic2 }}</h4>
+            <div id="myList2" style="height: 150px; overflow: auto">
+            </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-xl-12 mt-5 mb-5">
-            <div id="myList">
-            </div>
+        <div class="col-xl-12 mt-2 mb-5">
+            <div id="container" style="min-width: 310px; height: 400px;"></div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-
+    $(function () {
+        $('button').click(function () {
+            $.ajax({
+                url: '/api',
+                data: $('form').serialize(),
+                type: 'POST',
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
     window.setInterval(UpdatePostive, 1000);
     let Pcounter = 0;
     let Neucounter = 0;
     let Ncounter = 0;
+
+    let Pcounter2 = 0;
+    let Neucounter2 = 0;
+    let Ncounter2 = 0;
 
     function redrawFunction() {
         $('#container').highcharts().redraw();
@@ -70,6 +97,10 @@
     ul = document.createElement('ul');
     document.getElementById('myList').appendChild(ul);
     ul.classList.add("list-group");
+
+    ul2 = document.createElement('ul');
+    document.getElementById('myList2').appendChild(ul2);
+    ul2.classList.add("list-group");
 
     function UpdatePostive() {
         fetch('/hello')
@@ -85,11 +116,31 @@
                 let lastTweet = '';
                 if (tweet !== lastTweet) {
                     let li = document.createElement('li');
-                    ul.appendChild(li);
                     li.innerHTML += tweet;
+                    ul.insertBefore(li, ul.childNodes[0]);
                     li.classList.add("list-group-item");
                 }
-                 lastTweet = tweet;
+                lastTweet = tweet;
+            });
+
+        fetch('/hello2')
+            .then(function (response) {
+                return response.json(); // But parse it as JSON this time
+            })
+            .then(function (json) {
+                var values = JSON.parse(json);
+                Pcounter2 = values.Positive;
+                Neucounter2 = values.Neutral;
+                Ncounter2 = values.Negative;
+                const tweet = values.tweets;
+                let lastTweet = '';
+                if (tweet !== lastTweet) {
+                    let li = document.createElement('li');
+                    li.innerHTML += tweet;
+                    ul2.insertBefore(li, ul2.childNodes[0]);
+                    li.classList.add("list-group-item");
+                }
+                lastTweet = tweet;
             });
 
         var chart = $('#container').highcharts();
@@ -107,6 +158,22 @@
             {
                 name: "Negative",
                 y: Ncounter,
+                drilldown: "Negative"
+            }]);
+        chart.series[1].setData([
+            {
+                name: "Positive",
+                y: Pcounter2,
+                drilldown: "Positive"
+            },
+            {
+                name: "Neutral",
+                y: Neucounter2,
+                drilldown: "Neutral"
+            },
+            {
+                name: "Negative",
+                y: Ncounter2,
                 drilldown: "Negative"
             }]);
         redrawFunction();
@@ -142,20 +209,19 @@
                 series: {
                     borderWidth: 0,
                     dataLabels: {
-                        enabled: true,
-                        format: '{point.y:.1f}'
+                        enabled: true
                     }
                 }
             },
 
             tooltip: {
                 headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}<br/>'
             },
 
             series: [
                 {
-                    name: "Sentiments",
+                    name: "{{ topic1 }}",
                     colorByPoint: true,
                     data: [
                         {
@@ -171,6 +237,27 @@
                         {
                             name: "Negative",
                             y: Ncounter,
+                            drilldown: "Negative"
+                        }
+                    ]
+                },
+                {
+                    name: "{{ topic2 }}",
+                    colorByPoint: true,
+                    data: [
+                        {
+                            name: "Positive",
+                            y: Pcounter2,
+                            drilldown: "Positive"
+                        },
+                        {
+                            name: "Neutral",
+                            y: Neucounter2,
+                            drilldown: "Neutral"
+                        },
+                        {
+                            name: "Negative",
+                            y: Ncounter2,
                             drilldown: "Negative"
                         }
                     ]
