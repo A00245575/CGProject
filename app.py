@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, jsonify
 import Streampy as st
 
 app = Flask(__name__)
-search_term = 'Playstation'
+search_term = 'Trump'
 search_term2 = 'Xbox'
 
 
@@ -15,6 +15,7 @@ def hello():
     if request.method == 'POST':
         print('Incoming..')
         print(request.form['topic1'])  # parse as JSON
+        global search_term
         search_term = request.form['topic1']
         search_term2 = request.form['topic2']
         return 'OK', 200
@@ -35,6 +36,7 @@ def start_stream():
 
     tweets_listener = st.MyStreamListener(api)
     stream = st.tweepy.Stream(api.auth, tweets_listener)
+    global search_term
     stream.filter(track=[search_term], languages=["en"])
 
 
