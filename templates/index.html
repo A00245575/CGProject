@@ -74,6 +74,7 @@
                 type: 'POST',
                 success: function (response) {
                     console.log(response);
+                     refresh();
                 },
                 error: function (error) {
                     console.log(error);
@@ -81,6 +82,14 @@
             });
         });
     });
+
+    function refresh() {
+
+    setTimeout(function () {
+        location.reload(true)
+    }, 5000);
+}
+
     window.setInterval(UpdatePostive, 1000);
     let Pcounter = 0;
     let Neucounter = 0;

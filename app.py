@@ -1,15 +1,15 @@
 import json
 from threading import Thread
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import Streampy as st
 import Streampy2 as st2
 import sys
 
 
 app = Flask(__name__)
-search_term = 'Trump'
-search_term2 = 'Climate Change'
+search_term = ''
+search_term2 = ''
 
 
 @app.route('/hello', methods=['GET', 'POST'])
@@ -54,8 +54,7 @@ def start():
     thread3.start()
     thread2.join()
     thread3.join()
-    hello_world()
-    return json.dumps({'status': 'OK', 'topic1': search_term, 'topic2': search_term2})
+    return redirect(url_for('index', topic1=search_term, topic2=search_term2))
 
 
 @app.route('/')
